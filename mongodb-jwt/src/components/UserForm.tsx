@@ -13,20 +13,26 @@ export default function UserForm() {
     setMessage('');
   console.log('Sending data:', { name, email, password });
 
-  try {
-    const res = await fetch('/api/register',{ method : " POST" , headers : {'Content-Type': 'application/json'}, body: JSON.stringify({name,email,password})})
+//   try {
+//     const res = await fetch('/api/auth/register',
+//         { 
+//             method : " POST" , 
+//             headers : {'Content-Type': 'application/json'}, 
+//             body: JSON.stringify({name,email,password})
+//         }
+//     )
 
-    const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Something went wrong');
+//     const data = await res.json();
+//       if (!res.ok) throw new Error(data.message || 'Something went wrong');
 
       setMessage('User created successfully!');
       setName('');
       setEmail('');
       setPassword('');
 
-  } catch (err: any) {
-      setMessage(err.message || 'Failed to create user');
-    }
+//   } catch (err: any) {
+//       setMessage(err.message || 'Failed to create user');
+//     }
 }
 
   return (
