@@ -1,4 +1,6 @@
 "use client"
+
+import Link from 'next/link';
 import React, { useState } from 'react'
 
 export default function UserForm() {
@@ -13,26 +15,26 @@ export default function UserForm() {
     setMessage('');
   console.log('Sending data:', { name, email, password });
 
-//   try {
-//     const res = await fetch('/api/auth/register',
-//         { 
-//             method : " POST" , 
-//             headers : {'Content-Type': 'application/json'}, 
-//             body: JSON.stringify({name,email,password})
-//         }
-//     )
+  try {
+    const res = await fetch('/api/auth/register',
+        { 
+            method : "POST" , 
+            headers : {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({name,email,password})
+        }
+    )
 
-//     const data = await res.json();
-//       if (!res.ok) throw new Error(data.message || 'Something went wrong');
+    const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Something went wrong');
 
       setMessage('User created successfully!');
       setName('');
       setEmail('');
       setPassword('');
 
-//   } catch (err: any) {
-//       setMessage(err.message || 'Failed to create user');
-//     }
+  } catch (err: any) {
+      setMessage(err.message || 'Failed to create user');
+    }
 }
 
   return (
@@ -70,11 +72,25 @@ export default function UserForm() {
         >
           Create Account
         </button>
+
       </form>
+
+    <div>
+        <Link href="/login/"
+          
+          className="w-full  py-2 rounded text-center hover:bg-blue-700"
+        >
+          Login
+        </Link>
+    </div>
+
       {message && (
         <p className="mt-4 text-center text-sm text-red-600">{message}</p>
       )}
+
+    
     </div>
+       
     </div>
   )
 }
