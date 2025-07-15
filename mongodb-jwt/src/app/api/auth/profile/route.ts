@@ -1,21 +1,28 @@
-import { verifyToken } from '@/utils/jwt';
+import { NextResponse } from 'next/server';
+import { createToken } from '@/utils/jwt';
 import { prisma } from '@/lib/db';
+import { compare } from 'bcryptjs';
 
-export async function GET(req: Request) {
-  const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+export async function POST(req: Request) {
+  const { email, password } = await req.json();
+  const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!token) return new Response('No token', { status: 401 });
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 401 });
 
-  try {
-    const decoded = verifyToken(token) as any;
+  const isMatch = await compare(password, user.password);
+  if (!isMatch) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, name: true, email: true },
-    });
+  const token = createToken({ id: user.id, email: user.email });
 
-    return Response.json({ user });
-  } catch (err) {
-    return new Response('Invalid token', { status: 403 });
-  }
+  const res = NextResponse.json({ message: 'Logged in successfully' });
+
+  res.cookies.set('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24, // 1 day
+  });
+
+  return res;
 }
